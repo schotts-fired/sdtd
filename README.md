@@ -29,13 +29,14 @@ conda run -n sdtd python -m sdtd
 
 ## Probabilistic Matrix Factorization
 
-Part of my Bachelor thesis involved reproducing the experiments from the paper
+Part of my Bachelor thesis involved reproducing the experiments from this publication:
 
 > I. Valera and Z. Ghahramani, 
 > "Automatic Discovery of the Statistical Types of Variables in a Dataset", 
 > 34th International Conference on Machine Learning (ICML 2017). Sydney (Australia), 2017.
 
-The code for this is located in the `sdtd.gibbs` module. For continuous data types, the experiments can be run as follows:
+The code for this is located in the `sdtd.gibbs` module. The experiments for the different
+synthetic datasets can be run with the following commands:
 
 ### Real-valued data
 
@@ -61,8 +62,6 @@ python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=3.0 dataset.scale
 python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=5.0 dataset.scale=1.0
 ```
 
-For discrete data types, all configurations can be run with a single command:
-
 ### Categorical data
 
 ```bash
@@ -81,8 +80,8 @@ conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=ordinal K=1,2,3,4,5
 conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=count K=1,2,3,4,5 dataset.a=2,3,4,5,6,7,8
 ```
 
-Lastly, for the real-world datasets the number of simulations must explicitly be set to 1,
-since the default is 10. This can be achieved with the following commands:
+For the real-world datasets, the number of simulations must explicitly be set to 1,
+since the default is 10. They can be run with following commands:
 
 ### German Credit Dataset
 
