@@ -1,0 +1,21 @@
+name: alpha (categorical)
+program: sdtd.vae.main
+command:
+- ${env}
+- ${interpreter}
+- -m
+- ${program}
+- fit
+- -c
+- sdtd/vae/configs/dataset/categorical.yaml
+- -c
+- sdtd/vae/configs/model/sdtd.yaml
+- ${args}
+method: grid
+parameters:
+  model.init_args.alpha:
+    values: [0.1, 0.5, 1.0, 10.0, 100.0]
+  data.dataset_cfg.seed:
+    value: 42
+  trainer.check_val_every_n_epoch:
+    value: 1

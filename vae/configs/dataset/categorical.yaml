@@ -1,0 +1,5 @@
+# lightning.pytorch==2.1.3
+data:
+  name: 'categorical'
+  batch_size: 1000
+  dataset_cfg: {"n_classes": 9, "centroid_scale": 10.0, "feature_scale": 1.0, "shape": [3000, 10], "seed": null}

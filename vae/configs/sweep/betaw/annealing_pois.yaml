@@ -1,0 +1,23 @@
+name: beta_w (annealing,pois)
+program: sdtd.vae.main
+command:
+- ${env}
+- ${interpreter}
+- -m
+- ${program}
+- fit
+- -c
+- sdtd/vae/configs/dataset/poisson.yaml
+- -c
+- sdtd/vae/configs/model/sdtd.yaml
+- -c
+- sdtd/vae/configs/logging/full.yaml
+- ${args}
+method: grid
+parameters:
+  model.alpha:
+    values: [0.1, 0.5, 1.0, 10.0, 100.0]
+  model.beta_w_annealing_epochs:
+    value: 1000
+  model.beta_w:
+    value: 0

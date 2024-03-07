@@ -1,0 +1,25 @@
+name: beta_w (annealing,lognorm)
+program: sdtd.vae.main
+command:
+- ${env}
+- ${interpreter}
+- -m
+- ${program}
+- fit
+- -c
+- sdtd/vae/configs/dataset/lognormal.yaml
+- -c
+- sdtd/vae/configs/model/sdtd.yaml
+- -c
+- sdtd/vae/configs/logging/weights.yaml
+- ${args}
+method: grid
+parameters:
+  model.alpha:
+    values: [0.1, 0.5, 1.0, 10.0, 100.0]
+  model.beta_w_annealing_epochs:
+    value: 1000
+  model.beta_w:
+    value: 0
+  trainer.check_val_every_n_epoch:
+    value: 1

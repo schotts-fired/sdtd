@@ -1,0 +1,24 @@
+defaults:
+  - _self_
+  - dataset: null
+hydra:
+  job:
+    chdir: True
+  run:
+    dir: ./experiments/gibbs/${dataset.name}/${hydra.job.override_dirname}
+  sweep:
+    dir: ./experiments/gibbs/${dataset.name}
+    subdir: ${hydra.job.override_dirname}
+K: 2
+s2B: 1.0
+s2Z: 1.0
+s2Y: 1.0
+s2theta: 1.0
+s2u: 0.001
+n_simulations: 10
+n_iterations: 500
+alpha: 100
+seed: 42
+reference: false
+output_path: results.csv
+logging: false

@@ -1,0 +1,6 @@
+name: interval
+a: 0.5
+b: 0.5
+theta: 1.0
+shape: [1000, 1]
+seed: null

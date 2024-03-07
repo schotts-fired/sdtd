@@ -1,0 +1,6 @@
+trainer:
+  callbacks:
+    - class_path: sdtd.vae.util.PlotInferedWeights
+      init_args:
+        log_plot: false
+        log_csv: true

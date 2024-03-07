@@ -1,0 +1,6 @@
+name: categorical
+n_classes: null
+centroid_scale: 10.0
+feature_scale: 1.0
+shape: [1000, 10]
+seed: null

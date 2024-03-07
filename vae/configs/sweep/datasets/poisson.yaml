@@ -1,0 +1,21 @@
+name: poisson
+program: sdtd.vae.main
+command:
+- ${env}
+- ${interpreter}
+- -m
+- ${program}
+- fit
+- -c
+- sdtd/vae/configs/dataset/poisson.yaml
+- -c
+- sdtd/vae/configs/model/sdtd.yaml
+- -c
+- sdtd/vae/configs/logging/full.yaml
+- ${args}
+method: grid
+parameters:
+  model.output_dim_z:
+    values: [1, 2, 3, 4, 5]
+  data.dataset_cfg.w:
+    values: [2, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]

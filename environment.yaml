@@ -1,0 +1,22 @@
+name: sdtd
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - numpy
+  - numba
+  - scipy
+  - pandas
+  - pytorch
+  - pytorch-cuda=11.8
+  - tqdm
+  - scikit-learn
+  - lightning
+  - lightning[pytorch-extra]
+  - jsonargparse[signatures]
+  - typeshed-client
+  - omegaconf
+  - wandb
+  - hydra-core

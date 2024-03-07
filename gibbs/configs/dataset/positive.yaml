@@ -1,0 +1,6 @@
+name: positive
+split: 'all'
+a: 1.0
+scale: 1.0
+shape: [1000, 1]
+seed: null

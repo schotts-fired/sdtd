@@ -1,0 +1,21 @@
+name: beta_w (grid,ord)
+program: sdtd.vae.main
+command:
+- ${env}
+- ${interpreter}
+- -m
+- ${program}
+- fit
+- -c
+- sdtd/vae/configs/dataset/ordinal.yaml
+- -c
+- sdtd/vae/configs/model/sdtd.yaml
+- -c
+- sdtd/vae/configs/logging/full.yaml
+- ${args}
+method: grid
+parameters:
+  model.beta_w:
+    values: [0.0, 0.3, 0.5, 0.7, 1.0]
+  data.dataset_cfg.seed:
+    value: 42

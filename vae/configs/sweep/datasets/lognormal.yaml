@@ -1,0 +1,21 @@
+name: lognormal
+program: sdtd.vae.main
+command:
+- ${env}
+- ${interpreter}
+- -m
+- ${program}
+- fit
+- -c
+- sdtd/vae/configs/model/sdtd.yaml
+- -c
+- sdtd/vae/configs/dataset/lognormal.yaml
+- -c
+- sdtd/vae/configs/logging/full.yaml
+- ${args}
+method: grid
+parameters:
+  data.dataset_cfg.loc:
+    value: 0.0
+  data.dataset_cfg.scale:
+    values: [0.5, 1.0, 1.5]

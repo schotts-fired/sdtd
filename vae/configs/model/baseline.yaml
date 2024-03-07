@@ -1,0 +1,10 @@
+model:
+  class_path: sdtd.vae.lightning_modules.BaselineModule
+  init_args:
+    output_dim_z: 10
+    hidden_dim_z: null
+    n_layers_z: 1
+    hidden_dim_x: null
+    n_layers_x: 1
+    activation: null
+    lr: 0.001

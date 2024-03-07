@@ -1,0 +1,4 @@
+data:
+  name: german
+  batch_size: 1000
+  dataset_cfg: {"root_dir": ./experiments/datasets/german}

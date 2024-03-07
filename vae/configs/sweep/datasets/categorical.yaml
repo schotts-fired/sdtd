@@ -1,0 +1,21 @@
+name: categorical
+program: sdtd.vae.main
+command:
+- ${env}
+- ${interpreter}
+- -m
+- ${program}
+- fit
+- -c
+- sdtd/vae/configs/model/sdtd.yaml
+- -c
+- sdtd/vae/configs/dataset/categorical.yaml
+- -c
+- sdtd/vae/configs/logging/weights.yaml
+- ${args}
+method: grid
+parameters:
+  model.init_args.output_dim_z:
+    values: [1, 2, 3, 4, 5]
+  data.dataset_cfg.n_classes:
+    values: [3, 4, 5, 6, 7, 8, 9]

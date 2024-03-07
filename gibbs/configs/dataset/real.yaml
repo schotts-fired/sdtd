@@ -1,0 +1,5 @@
+name: real
+loc: 0
+scale: 10
+shape: [1000, 1]
+seed: null

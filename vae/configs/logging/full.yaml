@@ -1,0 +1,12 @@
+trainer:
+  callbacks:
+    - class_path: sdtd.vae.util.PlotMarginals
+    - class_path: sdtd.vae.util.PlotBatchMarginals
+    - class_path: sdtd.vae.util.PlotGeneratedMarginals
+    - class_path: sdtd.vae.util.PlotLatentSpace
+    - class_path: sdtd.vae.util.PlotReconstructedMarginals
+    - class_path: sdtd.vae.util.PlotInferedWeights
+      init_args:
+        log_plot: true
+        log_csv: true
+    - class_path: sdtd.vae.util.TrackLikelihoodParams
