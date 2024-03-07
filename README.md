@@ -29,14 +29,13 @@ conda run -n sdtd python -m sdtd
 
 ## Probabilistic Matrix Factorization
 
-The code for reproducing some of the experiments from
+Part of my Bachelor thesis involved reproducing the experiments from the paper
 
 > I. Valera and Z. Ghahramani, 
 > "Automatic Discovery of the Statistical Types of Variables in a Dataset", 
 > 34th International Conference on Machine Learning (ICML 2017). Sydney (Australia), 2017.
 
-is located in the `sdtd.gibbs` module. This part of the project uses the `hydra` configuration system to
-organize the experiments. For the continuous data types, they can be run as follows:
+The code for this is located in the `sdtd.gibbs` module. For continuous data types, the experiments can be run as follows:
 
 ### Real-valued data
 
@@ -62,8 +61,7 @@ python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=3.0 dataset.scale
 python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=5.0 dataset.scale=1.0
 ```
 
-The experiments for the discrete data types can be run with a single command by taking advantage
-of the `multirun` capabilities from the `hydra` configuration system:
+For discrete data types, all configurations can be run with a single command:
 
 ### Categorical data
 
