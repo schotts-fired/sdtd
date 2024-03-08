@@ -35,10 +35,28 @@ Part of my Bachelor thesis involved reproducing the experiments from this public
 > "Automatic Discovery of the Statistical Types of Variables in a Dataset", 
 > 34th International Conference on Machine Learning (ICML 2017). Sydney (Australia), 2017.
 
-The code for this is located in the `sdtd.gibbs` module. The experiments for the different
-synthetic datasets can be run with the following commands:
+The code for this is located in the `sdtd.gibbs` module. It implements the Gibbs sampling algorithm
+for the probabilistic graphical model:
+
+<p align="center">
+<object data="images/pgm1.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="images/pgm1.pdf"">
+        <p>This browser does not support PDFs.</p>
+    </embed>
+</object>
+</p>
+
+The results, datasets and commands to reproduce the
+experiments are as follows:
 
 ### Real-valued data
+
+<p align="center">
+<img src="./images/real.png" width="200">
+<img src="./images/normal010.png" width="200">
+<img src="./images/normal1010.png" width="200">
+<img src="./images/normal10100.png" width="200">
+</p>
 
 ```bash
 conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=0 dataset.scale=10
@@ -46,15 +64,14 @@ conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=1
 conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=10 dataset.scale=100
 ```
 
-### Interval-valued data
-
-```bash
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=0.5
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=1.0
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=3.0
-```
-
 ### Positive real-valued data
+
+<p align="center">
+<img src="./images/positive.png" width="200">
+<img src="./images/gamma11.png" width="200">
+<img src="./images/gamma31.png" width="200">
+<img src="./images/gamma51.png" width="200">
+</p>
 
 ```bash
 python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=1.0 dataset.scale=1.0
@@ -62,7 +79,30 @@ python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=3.0 dataset.scale
 python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=5.0 dataset.scale=1.0
 ```
 
+### Interval-valued data
+
+<p align="center">
+<img src="./images/interval.png" width="200">
+<img src="./images/beta0.50.5.png" width="200">
+<img src="./images/beta0.51.png" width="200">
+<img src="./images/beta0.53.png" width="200">
+</p>
+
+```bash
+conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=0.5
+conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=1.0
+conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=3.0
+```
+
 ### Categorical data
+
+<p align="center">
+<img src="./images/categorical_data.png" width="200">
+</p>
+<p align="center">
+<img src="./images/categorical_classes.png" width="200">
+<img src="./images/categorical_latent_features.png" width="200">
+</p>
 
 ```bash
 conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=categorical K=1,2,3,4,5 dataset.n_classes=3,4,5,6,7,8,9
@@ -70,11 +110,27 @@ conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=categorical K=1,2,3
 
 ### Ordinal data
 
+<p align="center">
+<img src="./images/ordinal_data.png" width="200">
+</p>
+<p align="center">
+<img src="./images/ordinal_classes.png" width="200">
+<img src="./images/ordinal_latent_features.png" width="200">
+</p>
+
 ```bash
 conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=ordinal K=1,2,3,4,5 dataset.n_classes=3,4,5,6,7,8,9
 ```
 
 ### Count data
+
+<p align="center">
+<img src="./images/count_data.png" width="200">
+</p>
+<p align="center">
+<img src="./images/count_a.png" width="200">
+<img src="./images/count_latent_features.png" width="200">
+</p>
 
 ```bash
 conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=count K=1,2,3,4,5 dataset.a=2,3,4,5,6,7,8
@@ -95,7 +151,17 @@ conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=adult K=10 n_simulatio
 ```
 
 ## Variational Autoencoder
-This part of the project is located in the `sdtd.vae` module. It takes advantage of `lightning`
+This part of the project is located in the `sdtd.vae` module. It implements the probabilistic graphical model
+
+<p align="center">
+<object data="images/pgm2.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="images/pgm2.pdf"">
+        <p>This browser does not support PDFs.</p>
+    </embed>
+</object>
+</p>
+
+It takes advantage of `lightning`
 to run the experiments and log the results in a structured way.
 As a result, however, they need to be run in a two-step process. First, the sweep needs to be
 initialized with a configuration file specifying the hyperparameters:
