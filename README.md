@@ -1,8 +1,10 @@
 # Discovering the Statistical Data Types of Variables with Probabilistic Matrix Factorization and Variational Autoencoders
 
-This repo contains the code for running all the experiments from my Bachelor
-thesis "Discovering the Statistical Data Types of Variables with Probabilistic
-Matrix Factorization and Variational Autoencoders". It is not intended to be
+This repo contains the code for running all the experiments from my Bachelor thesis:
+
+>Discovering the Statistical Data Types of Variables with Probabilistic Matrix Factorization and Variational Autoencoders.
+
+It is not intended to be
 used as a library but may serve as inspiration for similar projects.
 
 ## Installation
@@ -29,15 +31,13 @@ Part of my Bachelor thesis involved reproducing the experiments from this public
 > "Automatic Discovery of the Statistical Types of Variables in a Dataset", 
 > 34th International Conference on Machine Learning (ICML 2017). Sydney (Australia), 2017.
 
-The code for this is located in the `sdtd.gibbs` module. It implements the Gibbs sampling algorithm
-for the probabilistic graphical model:
+The code for this is located in the [sdtd.gibbs](gibbs) module. It implements the Gibbs sampling algorithm for the probabilistic graphical model:
 
 <p align="center">
 <img src="./images/pgm1.png" width="200">
 </p>
 
-The results, datasets and commands to reproduce the
-experiments are as follows:
+The results, datasets and commands to reproduce the experiments are as follows:
 
 ### Real-valued data
 
@@ -126,8 +126,7 @@ python -m sdtd.gibbs.hydra_main -m dataset=ordinal K=1,2,3,4,5 dataset.n_classes
 python -m sdtd.gibbs.hydra_main -m dataset=count K=1,2,3,4,5 dataset.a=2,3,4,5,6,7,8
 ```
 
-For the real-world datasets, the number of simulations must explicitly be set to 1,
-since the default is 10. They can be run with following commands:
+For the real-world datasets, the number of simulations must explicitly be set to 1, since the default is 10. They can be run with following commands:
 
 ### German Credit Dataset
 
@@ -141,13 +140,13 @@ python -m sdtd.gibbs.hydra_main dataset=adult K=10 n_simulations=1
 ```
 
 ## Variational Autoencoder
-This part of the project is located in the `sdtd.vae` module. It implements the probabilistic graphical model
+This part of the project is located in the [sdtd.vae](vae) module. It implements the probabilistic graphical model
 
 <p align="center">
 <img src="./images/pgm2.png" width="200">
 </p>
 
-It takes advantage of `lightning`
+It takes advantage of [lightning](https://lightning.ai/docs/pytorch/stable/)
 to run the experiments and log the results in a structured way.
 As a result, however, they need to be run in a two-step process. First, the sweep needs to be
 initialized with a configuration file specifying the hyperparameters:
@@ -163,6 +162,6 @@ wandb agent <sweep-id>
 ```
 
 This process can be used to run all the experiments specified in the
-`sdtd/vae/configs/sweeps` directories. The outputs for each of the experiments
+[sweeps directory](vae/configs/sweep). The outputs for each of the experiments
 will be logged in the `wandb` project `vae` and can be found in the `Sweeps`
 tab.
