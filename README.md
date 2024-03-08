@@ -39,11 +39,7 @@ The code for this is located in the `sdtd.gibbs` module. It implements the Gibbs
 for the probabilistic graphical model:
 
 <p align="center">
-<object data="images/pgm1.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="images/pgm1.pdf"">
-        <p>This browser does not support PDFs.</p>
-    </embed>
-</object>
+<img src="./images/pgm1.png" width="200">
 </p>
 
 The results, datasets and commands to reproduce the
@@ -154,11 +150,7 @@ conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=adult K=10 n_simulatio
 This part of the project is located in the `sdtd.vae` module. It implements the probabilistic graphical model
 
 <p align="center">
-<object data="images/pgm2.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="images/pgm2.pdf"">
-        <p>This browser does not support PDFs.</p>
-    </embed>
-</object>
+<img src="./images/pgm2.png" width="200">
 </p>
 
 It takes advantage of `lightning`
