@@ -21,12 +21,6 @@ All the experiments can be run using the `sdtd` module. For this, it is necessar
 conda activate sdtd
 ```
 
-Alternatively, the `conda run` command can be used to run the module without activating the environment:
-
-```bash
-conda run -n sdtd python -m sdtd
-```
-
 ## Probabilistic Matrix Factorization
 
 Part of my Bachelor thesis involved reproducing the experiments from this publication:
@@ -55,9 +49,9 @@ experiments are as follows:
 </p>
 
 ```bash
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=0 dataset.scale=10
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=10 dataset.scale=10
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=10 dataset.scale=100
+python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=0 dataset.scale=10
+python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=10 dataset.scale=10
+python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=10 dataset.scale=100
 ```
 
 ### Positive real-valued data
@@ -85,9 +79,9 @@ python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=5.0 dataset.scale
 </p>
 
 ```bash
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=0.5
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=1.0
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=3.0
+python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=0.5
+python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=1.0
+python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=3.0
 ```
 
 ### Categorical data
@@ -101,7 +95,7 @@ conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a
 </p>
 
 ```bash
-conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=categorical K=1,2,3,4,5 dataset.n_classes=3,4,5,6,7,8,9
+python -m sdtd.gibbs.hydra_main -m dataset=categorical K=1,2,3,4,5 dataset.n_classes=3,4,5,6,7,8,9
 ```
 
 ### Ordinal data
@@ -115,7 +109,7 @@ conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=categorical K=1,2,3
 </p>
 
 ```bash
-conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=ordinal K=1,2,3,4,5 dataset.n_classes=3,4,5,6,7,8,9
+python -m sdtd.gibbs.hydra_main -m dataset=ordinal K=1,2,3,4,5 dataset.n_classes=3,4,5,6,7,8,9
 ```
 
 ### Count data
@@ -129,7 +123,7 @@ conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=ordinal K=1,2,3,4,5
 </p>
 
 ```bash
-conda run -n sdtd python -m sdtd.gibbs.hydra_main -m dataset=count K=1,2,3,4,5 dataset.a=2,3,4,5,6,7,8
+python -m sdtd.gibbs.hydra_main -m dataset=count K=1,2,3,4,5 dataset.a=2,3,4,5,6,7,8
 ```
 
 For the real-world datasets, the number of simulations must explicitly be set to 1,
@@ -138,12 +132,12 @@ since the default is 10. They can be run with following commands:
 ### German Credit Dataset
 
 ```bash
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=german K=10 n_simulations=1
+python -m sdtd.gibbs.hydra_main dataset=german K=10 n_simulations=1
 ```
 ### Adult Dataset
 
 ```bash
-conda run -n sdtd python -m sdtd.gibbs.hydra_main dataset=adult K=10 n_simulations=1
+python -m sdtd.gibbs.hydra_main dataset=adult K=10 n_simulations=1
 ```
 
 ## Variational Autoencoder
