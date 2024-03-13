@@ -94,17 +94,10 @@ class PlotGeneratedMarginals(L.Callback):
 
         # generate
         N = pl_module.example_input_array[0].shape[0]
-        M = len(pl_module.example_input_array)
-        z = pl_module.prior_z().sample((N, ))
-        for m in range(pl_module.n_features):
-            if pl_module.domains[m].is_real() or pl_module.domains[m].is_binary():
-                p_x_m = pl_module.decoder_x[m](z)
-                x = p_x_m.sample().cpu()
-            else:
-                w_m = pl_module.prior_w(m).sample()
-                p_x_m = pl_module.decoder_x[m](z, w_m)
-                x = p_x_m.sample().cpu()
-            x_df = pd.DataFrame(x.numpy(), columns=[f'$x^d$'])
+        M = pl_module.n_features
+        x = pl_module.generate(N)
+        for m in range(M):
+            x_df = pd.DataFrame(x[m].cpu().numpy(), columns=[f'$x^d$'])
             fig = _create_marginals_fig(x_df, pl_module.domains[m])
             trainer.logger.experiment.log({f'Generative Samples/X{m}': wandb.Image(fig)})
             plt.close()

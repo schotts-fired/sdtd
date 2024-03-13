@@ -79,6 +79,71 @@ class Encoder_Z(nn.Module):
         return D.Normal(loc, scale)
 
 
+class Decoder_Y(nn.Module):
+    """Intermediate decoder between encoder and per-data type decoders.
+
+    Can be shared or multi-headed and disabled by setting n_layers=0. If it is disabled,
+    it will simply return a view of the input tensor, such that indexing can be done
+    as if it was enabled.
+
+    Args:
+        n_features (int): Number of features in the dataset.
+        shared (bool): Whether to use a shared or multi-headed architecture.
+        input_dim (int): Input dimension.
+        output_dim (int): Output dimension.
+        hidden_dim (int): Hidden dimension.
+        activation (str): Activation function.
+        n_layers (int): Number of layers. Set to 0 to disable this decoder.
+    """
+
+    def __init__(self,
+                 # dataset attributes
+                 n_features: int,
+
+                 # hyperparameters
+                 shared: bool,
+
+                 # architecture
+                 input_dim: int,
+                 output_dim: int,
+                 hidden_dim: int,
+                 activation: str,
+                 n_layers: int):
+        super().__init__()
+        assert n_layers is None or n_layers > 0, f"n_layers: {n_layers}"
+        self.shared = shared
+        self.n_features = n_features
+        self.output_dim = output_dim
+        self.disabled = n_layers is None
+        if not self.disabled:
+            if self.shared:
+                self.g = MLP(input_dim,
+                             output_dim * n_features,
+                             hidden_dim,
+                             activation,
+                             n_layers)
+            else:
+                self.g = MultiHeadMLP(n_heads=n_features,
+                                      input_dim=input_dim,
+                                      output_dim=output_dim,
+                                      hidden_dim=hidden_dim,
+                                      activation=activation,
+                                      n_layers=n_layers)
+        else:
+            self.g = nn.Identity()
+
+    def forward(self, Z):
+        Y = self.g(Z)
+
+        if self.disabled:
+            return Y.unsqueeze(1).expand(-1, self.n_features, -1)
+
+        if self.shared:
+            return Y.reshape((-1, self.n_features, self.output_dim))
+
+        return Y
+
+
 class Decoder_X_cont(nn.Module):
 
     def __init__(self,
@@ -114,6 +179,7 @@ class Decoder_X_disc(nn.Module):
                  n_classes: int,
 
                  # architecture
+                 global_thresholds: bool,
                  input_dim: int,
                  hidden_dim: int,
                  activation: str,
@@ -121,7 +187,7 @@ class Decoder_X_disc(nn.Module):
         super().__init__()
         self.heads = nn.ModuleDict()
         self.heads['cat'] = Decoder_X_cat(n_classes, input_dim, hidden_dim, activation, n_layers)
-        self.heads['ord'] = Decoder_X_ord(n_classes, input_dim, hidden_dim, activation, n_layers)
+        self.heads['ord'] = Decoder_X_ord(n_classes, global_thresholds, input_dim, hidden_dim, activation, n_layers)
         self.heads['count'] = Decoder_X_count(input_dim, hidden_dim, activation, n_layers)
 
     def forward(self, x: torch.Tensor, w: torch.Tensor):
@@ -276,6 +342,9 @@ class Decoder_X_ord(nn.Module):
                  n_classes: int,
 
                  # architecture
+                 global_thresholds: bool,
+
+                 # architecture
                  input_dim: int,
                  hidden_dim: int,
                  activation: str,
@@ -286,7 +355,12 @@ class Decoder_X_ord(nn.Module):
 
         # hyperparameters
         self.n_classes = n_classes
-        self.gamma = MLP(input_dim, n_classes, hidden_dim, activation, n_layers)
+        self.global_thresholds = global_thresholds
+        if self.global_thresholds:
+            self.gamma = MLP(input_dim, 1, hidden_dim, activation, n_layers)
+            self.thresholds = nn.Parameter(torch.linspace(-1, 1, n_classes - 1), requires_grad=True)
+        else:
+            self.gamma = MLP(input_dim, n_classes, hidden_dim, activation, n_layers)
 
     def forward(self, x) -> OrderedLogistic:
         # compute parameters
@@ -296,10 +370,16 @@ class Decoder_X_ord(nn.Module):
         loc = parameters[:, 0]
 
         # extract thresholds
-        thresholds = torch.cumsum(F.softplus(parameters[:, 1:]), dim=1)
+        if self.global_thresholds:
+            thresholds = self.thresholds[None, :].expand(x.shape[0], -1)
+        else:
+            thresholds = parameters[:, 1:]
+
+        # OOORDER
+        thresholds = torch.cumsum(F.softplus(thresholds), dim=1)
 
         assert loc.shape == (x.shape[0], ), loc.shape
-        assert thresholds.shape == (self.n_classes - 1, ) or thresholds.shape == (x.shape[0], self.n_classes - 1), thresholds.shape
+        assert thresholds.shape == (x.shape[0], self.n_classes - 1), thresholds.shape
         return OrderedLogistic(loc=loc, thresholds=thresholds)
 
 

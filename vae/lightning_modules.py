@@ -17,7 +17,7 @@ from sdtd.data.util import Domain
 from sdtd import data
 from sdtd.vae.modules import (
     Encoder_W, Encoder_Z, Decoder_X_cont, Decoder_X_disc, Decoder_X_bin,
-    Decoder_X_real, Decoder_X_cat
+    Decoder_X_real, Decoder_X_cat, Decoder_Y
 
 )
 from sdtd.vae.util import thermometer
@@ -37,8 +37,15 @@ class SDTDModule(L.LightningModule):
                  # z
                  output_dim_z: int = 10,
                  hidden_dim_z: int = None,
-                 hidden_dim_z_same_as_output_dim_z: bool = False,
+                 hidden_dim_z_same_as_output_dim_z: bool = True,
                  n_layers_z: int = 1,
+
+                 # y
+                 output_dim_y: int = None,
+                 hidden_dim_y: int = None,
+                 hidden_dim_y_same_as_output_dim_y: bool = True,
+                 n_layers_y: int = None,
+                 share_y: bool = True,
 
                  # x
                  hidden_dim_x: int = None,
@@ -46,6 +53,7 @@ class SDTDModule(L.LightningModule):
 
                  # architecture in general
                  activation: str = "relu",
+                 global_thresholds: bool = False,
 
                  # optimization
                  lr: float = 1e-3,
@@ -62,14 +70,14 @@ class SDTDModule(L.LightningModule):
         assert not (beta_w_annealing_epochs and beta_w_annealing_epochs < 0), "Beta_w_annealing_epochs must be positive"
         assert not (beta_w_decaying_epochs and beta_w_decaying_epochs < 0), "Beta_w_decaying_epochs must be positive"
         assert not (hidden_dim_z_same_as_output_dim_z and hidden_dim_z is not None), "hidden_dim_z_same_as_output_dim_z ignores hidden_dim_z, which was set to a value"
+        assert not (hidden_dim_y_same_as_output_dim_y and hidden_dim_y is not None), "hidden_dim_y_same_as_output_dim_y ignores hidden_dim_y, which was set to a value"
+        assert not (n_layers_y is None and (output_dim_y is not None or hidden_dim_y is not None)), "n_layers_y == 0 ignores output_dim_y, which was set to a value"
 
         # hyperparameters
         self.save_hyperparameters(ignore=['domains', 'n_classes'])
         self.n_features = len(domains)
         self.domains = domains
         self.n_classes = n_classes
-        if hidden_dim_z_same_as_output_dim_z:
-            hidden_dim_z = output_dim_z
 
         # batch norm
         normalized_dim = 0
@@ -88,7 +96,7 @@ class SDTDModule(L.LightningModule):
         self.encoder_w = nn.ModuleList()
         for m in range(self.n_features):
             if domains[m].is_real() or domains[m].is_binary():
-                # no weights here, but append None to keep the indices consistent, ModuelDicts require strings as keys
+                # no weights here, but append None to keep the indices consistent, ModuleDicts require strings as keysa, so I consider this to be the better option
                 self.prior_w_alpha.append(None)
                 self.encoder_w.append(None)
             else:
@@ -100,20 +108,29 @@ class SDTDModule(L.LightningModule):
                 self.encoder_w.append(Encoder_W(prior_alpha_m))
 
         # Z
+        if hidden_dim_z_same_as_output_dim_z:
+            hidden_dim_z = output_dim_z
         self.prior_loc = nn.Parameter(torch.zeros(output_dim_z), requires_grad=False)
         self.encoder_z = Encoder_Z(normalized_dim, output_dim_z, hidden_dim_z, activation, n_layers_z)
+
+        # Y
+        if hidden_dim_y_same_as_output_dim_y:
+            hidden_dim_y = output_dim_y
+        if n_layers_y is None:
+            output_dim_y = output_dim_z
+        self.decoder_y = Decoder_Y(self.n_features, share_y, output_dim_z, output_dim_y, hidden_dim_y, activation, n_layers_y)
 
         # X
         self.decoder_x = nn.ModuleList()
         for m in range(self.n_features):
             if self.domains[m].is_real():
-                self.decoder_x.append(Decoder_X_real(output_dim_z, hidden_dim_x, activation, n_layers_x))
+                self.decoder_x.append(Decoder_X_real(output_dim_y, hidden_dim_x, activation, n_layers_x))
             elif self.domains[m].is_positive_real():
-                self.decoder_x.append(Decoder_X_cont(output_dim_z, hidden_dim_x, activation, n_layers_x))
+                self.decoder_x.append(Decoder_X_cont(output_dim_y, hidden_dim_x, activation, n_layers_x))
             elif self.domains[m].is_binary():
-                self.decoder_x.append(Decoder_X_bin(output_dim_z, hidden_dim_x, activation, n_layers_x))
+                self.decoder_x.append(Decoder_X_bin(output_dim_y, hidden_dim_x, activation, n_layers_x))
             elif self.domains[m].is_discrete():
-                self.decoder_x.append(Decoder_X_disc(n_classes[m], output_dim_z, hidden_dim_x, activation, n_layers_x))
+                self.decoder_x.append(Decoder_X_disc(n_classes[m], global_thresholds, output_dim_y, hidden_dim_x, activation, n_layers_x))
 
     # PRIORS
 
@@ -158,6 +175,7 @@ class SDTDModule(L.LightningModule):
         # sample z
         q_z = self.encoder_z(x_normalized)
         z = q_z.rsample()
+        y = self.decoder_y(z)
 
         # create mixtures
         q_w = {}
@@ -165,9 +183,9 @@ class SDTDModule(L.LightningModule):
         p_x = []
         for m in range(self.n_features):
             if self.domains[m].is_real():
-                p_x.append(self.decoder_x[m](z, batch_loc_real[m], batch_scale_real[m]))
+                p_x.append(self.decoder_x[m](y[:, m], batch_loc_real[m], batch_scale_real[m]))
             elif self.domains[m].is_binary():
-                p_x.append(self.decoder_x[m](z))
+                p_x.append(self.decoder_x[m](y[:, m]))
             else:
                 # mixture weights
                 q_w[m] = self.encoder_w[m](x[m])  # x is just used for the shape here
@@ -175,18 +193,31 @@ class SDTDModule(L.LightningModule):
 
                 # likelihood
                 if self.domains[m].is_positive_real():
-                    p_x_m = self.decoder_x[m](z, w[m],
+                    p_x_m = self.decoder_x[m](y[:, m], w[m],
                                               batch_loc_real[m],
                                               batch_scale_real[m],
                                               batch_loc_pos[m],
                                               batch_scale_pos[m])
                 elif self.domains[m].is_discrete():
-                    p_x_m = self.decoder_x[m](z, w[m])
+                    p_x_m = self.decoder_x[m](y[:, m], w[m])
 
                 p_x.append(p_x_m)
 
         # result
         return {'p_x': p_x, 'q_w': q_w, 'q_z': q_z}
+
+    def generate(self, n: int):
+        z = self.prior_z().sample((n, ))
+        y = self.decoder_y(z)
+        x = []
+        for m in range(self.n_features):
+            if self.domains[m].is_real() or self.domains[m].is_binary():
+                p_x_m = self.decoder_x[m](y[:, m])
+            else:
+                w_m = self.prior_w(m).sample((n, ))
+                p_x_m = self.decoder_x[m](y[:, m], w_m)
+            x.append(p_x_m.sample())
+        return x
 
     # TRAINING
 
