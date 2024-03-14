@@ -17,6 +17,7 @@ conda activate sdtd
 
 ## Probabilistic Matrix Factorization
 
+### Overview 
 Part of my Bachelor thesis involved reproducing the experiments from [this publication](https://proceedings.mlr.press/v70/valera17a.html):
 
 > I. Valera and Z. Ghahramani, 
@@ -31,11 +32,29 @@ It implements a Gibbs sampling algorithm for this probabilistic graphical model:
 <img src="./images/pgm1.png" width="200">
 </p>
 
-Below are all the commands to reproduce the experiments from my thesis.
-The results will appear as csv files in [`experiments/gibbs`](experiments/gibbs).
+### Experiments
 
-### Synthetic Data
-#### Real-valued data
+Below are all the commands to reproduce the experiments for this part of my thesis.
+The results will appear as csv files in a separate folder for each run. The folder is named
+according to the hyperparameters defining this run. This looks as follows:
+
+```
+.
+├── sdtd
+└── experiments/
+    └── gibbs/
+        ├── real/
+        │   ├── K=1,dataset.loc=0,dataset.scale=10,dataset=real/
+        │   │   └── results.csv
+        │   ├── K=1,dataset.loc=10,dataset.scale=10,dataset=real/
+        │   │   └── results.csv
+        │   └── ...
+        ├── positive
+        └── ...
+```
+
+#### Synthetic Data
+##### Real-valued data
 
 |Results|N(0,10)|N(10,10)|N(10,100)|
 |-------|-------|--------|---------|
@@ -48,7 +67,7 @@ python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=10 dataset.scale=10
 python -m sdtd.gibbs.hydra_main dataset=real K=1 dataset.loc=10 dataset.scale=100
 ```
 
-#### Positive real-valued data
+##### Positive real-valued data
 
 |Results|Gamma(1,1)|Gamma(3,1)|Gamma(5,1)|
 |-------|-------|--------|---------|
@@ -61,7 +80,7 @@ python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=3.0 dataset.scale
 python -m sdtd.gibbs.hydra_main dataset=positive K=1 dataset.a=5.0 dataset.scale=1.0
 ```
 
-#### Interval-valued data
+##### Interval-valued data
 
 |Results|Beta(0.5,0.5)|Beta(0.5,1.0)|Beta(0.5,3.0)|
 |-------|-------|--------|---------|
@@ -73,7 +92,7 @@ python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=1.0
 python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=3.0
 ```
 
-#### Categorical data
+##### Categorical data
 
 <table>
     <thead>
@@ -98,7 +117,7 @@ python -m sdtd.gibbs.hydra_main dataset=interval K=1 dataset.a=0.5 dataset.b=3.0
 python -m sdtd.gibbs.hydra_main -m dataset=categorical K=1,2,3,4,5 dataset.n_classes=3,4,5,6,7,8,9
 ```
 
-#### Ordinal data
+##### Ordinal data
 
 <table>
     <thead>
@@ -123,7 +142,7 @@ python -m sdtd.gibbs.hydra_main -m dataset=categorical K=1,2,3,4,5 dataset.n_cla
 python -m sdtd.gibbs.hydra_main -m dataset=ordinal K=1,2,3,4,5 dataset.n_classes=3,4,5,6,7,8,9
 ```
 
-#### Count data
+##### Count data
 
 <table>
     <thead>
@@ -148,15 +167,15 @@ python -m sdtd.gibbs.hydra_main -m dataset=ordinal K=1,2,3,4,5 dataset.n_classes
 python -m sdtd.gibbs.hydra_main -m dataset=count K=1,2,3,4,5 dataset.a=2,3,4,5,6,7,8
 ```
 
-### Real-world Data
+#### Real-world Data
 For the real-world datasets, the number of simulations must explicitly be set to 1, since the default is 10. They can be run with following commands:
 
-#### German Credit Dataset
+##### German Credit Dataset
 
 ```bash
 python -m sdtd.gibbs.hydra_main dataset=german K=10 n_simulations=1
 ```
-#### Adult Dataset
+##### Adult Dataset
 
 ```bash
 python -m sdtd.gibbs.hydra_main dataset=adult K=10 n_simulations=1
@@ -186,6 +205,6 @@ wandb agent <sweep-id>
 
 This process can be used to run all the experiments specified in the
 [sweeps directory](vae/configs/sweep). The outputs for each of the experiments
-will be logged in the `wandb` project `vae` and can be found in the `Sweeps`
+will be logged in the `vae` project and can be found in the `Sweeps`
 tab. For details on how to setup `wandb`, please refer to the [setup
 guide](https://docs.wandb.ai/guides/hosting/how-to-guides/basic-setup).
