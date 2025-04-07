@@ -1,4 +1,4 @@
-# Discovering the Statistical Data Types of Variables with Probabilistic Matrix Factorization and Variational Autoencoders
+# On (Deep) Probabilistic Models for Data Type Discovery
 
 This repo contains the code for my Bachelor thesis:
 
